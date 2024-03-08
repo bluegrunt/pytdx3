@@ -14,18 +14,29 @@ from tdx_const import *
 from tdx_utils import *
 
 b_have_wx = True
+b_have_sg = True
 try :
     import wx
 except ImportError :
     b_have_wx = False
 
+try :
+    import PySimpleGUI as sg
+except ImportError :
+    b_have_sg = False
 
 def myputs(sss,obj=None):
     if b_have_wx and obj != None:
         obj.AppendText(sss)
         obj.AppendText('\n')
+    elif type(obj) == list:
+        obj.append(sss)
     else:
         print(sss)
+
+def progress_percent(count,window):
+    if b_have_sg:
+        window['-PROCESSBAR-'].update(count)
 
 
 ## file format error
@@ -110,7 +121,8 @@ class TdxNames(Tdx):
 
     def get_id_like_list(self,pattern):
         """pattern可以为 SH9|SH6|SH58|SH77|SZ39|SZ30|SZ0"""
-        pats = string.split(pattern,'|')
+        # pats = string.split(pattern,'|')
+        pats = pattern.split('|')
         if len(pats) == 0 :
             return self.namelist
         namelist = []
@@ -125,7 +137,7 @@ class TdxNames(Tdx):
 
     def get_id_like_dict(self,pattern):
         """pattern可以为 SH9|SH6|SH58|SH77|SZ39|SZ30|SZ0"""
-        pats = string.split(pattern,'|')
+        pats = pattern.split('|')
         if len(pats) == 0 :
             return self.namedict
         namedict = {}
@@ -207,13 +219,14 @@ class TdxNames(Tdx):
 
 ## 分钟数据转换等等
 class TdxMin(Tdx):
-    def __init__(self,root,TdxOut=None):
+    def __init__(self,root,TdxOut=None,sgWindow=None):
         Tdx.__init__(self,root)
         self.clear()
         self.stkdict = {}
         self.stkid = '999999'
         self.mkt   = 'SH'
         self.TdxOut = TdxOut
+        self.sgWindow = sgWindow
 
     def clear(self):
         self.data_orig = [] #文本数据
@@ -249,7 +262,7 @@ class TdxMin(Tdx):
             if dt1 and dt2 :
                 zipedfiles = filter(lambda x : len(x) >= 8 and x[0:8] >= dt1 and x[0:8] <= dt2,zipedfiles)
             for f in zipedfiles:
-                thesefiles[string.upper(f)] = 'ZIP'
+                thesefiles[f.upper()] = 'ZIP'
 
         #处理textfile 
         txtfiles = glob.glob(os.path.join(self.ExportPath,'*-'+self.stkid+'.TXT')) 
@@ -258,14 +271,21 @@ class TdxMin(Tdx):
             txtfiles = filter(lambda x : len(x) >= 8 and x[0:8] >= dt1 and x[0:8] <= dt2,txtfiles)
         #txtfiles = filter(lambda x : not thesefiles.has_key(string.upper(x)),txtfiles)
         for f in txtfiles:
-            if not thesefiles.has_key(string.upper(f)):
-                thesefiles[string.upper(f)] = 'TXT'
+            if not thesefiles.get(f.upper(),None):
+                thesefiles[f.upper()] = 'TXT'
 
         self.file_names = thesefiles.keys()
         self.file_names.sort()
         lastclose = 0
+        file_cnt = len(self.file_names)
+        i = 0
         for f in self.file_names: # 这些都是短文件名
-            myputs(f,self.TdxOut)
+            i += 1
+            if self.sgWindow:
+                count = i / file_cnt * 100
+                progress_percent(count,self.sgWindow)
+            else:
+                myputs(f,self.TdxOut)
             if thesefiles[f] == 'ZIP': # Frome ziped files
                 doc = fzip.read(f)
                 doc_lines = StringIO.StringIO(doc).readlines()

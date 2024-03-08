@@ -649,7 +649,8 @@ def readMinBin(p_name):
         f = open(p_name,'rb')
         stkid = os.path.split(p_name)[1]
         stkid = os.path.splitext(stkid)[0]
-        if string.lower(stkid[0:2]) == 'sh' or string.lower(stkid[0:2]) == 'sz':
+        # if string.lower(stkid[0:2]) == 'sh' or string.lower(stkid[0:2]) == 'sz':
+        if stkid[0:2].upper() in ['SH','SZ']:
             stkid = stkid[2:]
         icnt = 0
         data = []
@@ -711,7 +712,8 @@ def readMinBin_new(p_name):
         f = open(p_name,'rb')
         stkid = os.path.split(p_name)[1]
         stkid = os.path.splitext(stkid)[0]
-        if string.lower(stkid[0:2]) == 'sh' or string.lower(stkid[0:2]) == 'sz':
+        # if string.lower(stkid[0:2]) == 'sh' or string.lower(stkid[0:2]) == 'sz':
+        if stkid[0:2].upper() in ['SH','SZ']:
             stkid = stkid[2:]
         icnt = 0
         data = []
