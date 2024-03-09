@@ -132,7 +132,7 @@ class TdxNames(Tdx):
                     return True
             return False
             
-        namelist = filter(lambda x : _is_stkid_like(x[0],pats),self.namelist)
+        namelist = list(filter(lambda x : _is_stkid_like(x[0],pats),self.namelist))
         return namelist
 
     def get_id_like_dict(self,pattern):
@@ -258,23 +258,23 @@ class TdxMin(Tdx):
             #return 
         else:
             zipedfiles = fzip.namelist()
-            zipedfiles = map(lambda x : os.path.basename(x),zipedfiles)
+            zipedfiles = list(map(lambda x : os.path.basename(x),zipedfiles))
             if dt1 and dt2 :
-                zipedfiles = filter(lambda x : len(x) >= 8 and x[0:8] >= dt1 and x[0:8] <= dt2,zipedfiles)
+                zipedfiles = list(filter(lambda x : len(x) >= 8 and x[0:8] >= dt1 and x[0:8] <= dt2,zipedfiles))
             for f in zipedfiles:
                 thesefiles[f.upper()] = 'ZIP'
 
         #处理textfile 
         txtfiles = glob.glob(os.path.join(self.ExportPath,'*-'+self.stkid+'.TXT')) 
-        txtfiles = map(lambda x : os.path.basename(x),txtfiles)
+        txtfiles = list(map(lambda x : os.path.basename(x),txtfiles))
         if dt1 and dt2 :
-            txtfiles = filter(lambda x : len(x) >= 8 and x[0:8] >= dt1 and x[0:8] <= dt2,txtfiles)
+            txtfiles = list(filter(lambda x : len(x) >= 8 and x[0:8] >= dt1 and x[0:8] <= dt2,txtfiles))
         #txtfiles = filter(lambda x : not thesefiles.has_key(string.upper(x)),txtfiles)
         for f in txtfiles:
             if not thesefiles.get(f.upper(),None):
                 thesefiles[f.upper()] = 'TXT'
 
-        self.file_names = thesefiles.keys()
+        self.file_names = list(thesefiles.keys())
         self.file_names.sort()
         lastclose = 0
         file_cnt = len(self.file_names)
@@ -287,8 +287,10 @@ class TdxMin(Tdx):
             else:
                 myputs(f,self.TdxOut)
             if thesefiles[f] == 'ZIP': # Frome ziped files
-                doc = fzip.read(f)
-                doc_lines = StringIO.StringIO(doc).readlines()
+                doc = fzip.read(f).decode(encoding="gbk")
+                # print(doc)
+                # doc_lines = StringIO.StringIO(doc).readlines()
+                doc_lines = StringIO(doc).readlines()
             else:                      # Frome Text  files
                 try : 
                     doc_lines = file(os.path.join(self.ExportPath,f)).readlines()
@@ -298,7 +300,7 @@ class TdxMin(Tdx):
             #end if zip or txt
             
             data_orig = readfbtxt(doc_lines,f)
-            data_fb   = fbtxt2lc0(data_orig) 
+            # data_fb   = fbtxt2lc0(data_orig) 
             data_01   = fbtxt2lc1(data_orig)
             if tdx240 : ## 保证每日240跟K线的处理
                 data_01 = tdxlc1_240(data_01,lastclose)
@@ -333,7 +335,7 @@ class TdxMin(Tdx):
             if type(dt2) == str :
                 tt = time.strptime(dt2,"%Y%m%d")
                 dt2 = datetime.date(tt.tm_year,tt.tm_mon,tt.tm_mday)
-            self.data_day = filter(lambda x : x[M_DT] >= dt1 and x[M_DT] <= dt2,self.data_day)
+            self.data_day = list(filter(lambda x : x[M_DT] >= dt1 and x[M_DT] <= dt2,self.data_day))
 
 
     def fuQuan(self,p_convfq):
@@ -407,9 +409,15 @@ if __name__ == '__main__':
     
     
     print( '='*70)
-    nn=TdxNames(r'D:\stock\new_gxzq_v6')
-    tdx = readDayBin(r'D:\stock\new_gxzq_v6')
-    
+    # nn=TdxNames(r'D:\stock\new_gxzq_v6')
+    # tdx = readDayBin(r'D:\stock\new_gxzq_v6')
+    adict = {
+        'col1':1,
+        'col2':2
+    }
+    skey = list(adict.keys())
+    skey.sort()
+    ss = ''
     #with open('shex.txt','r',encoding='gbk') as f1:
 
     #nn.updateName([('SH770002','标普指数','BPZS'),('SZ370001','其他指数','QTZS')])

@@ -18,80 +18,80 @@ KEYEVENTF_KEYUP = 2
 
 def _key_down( vk ) :
 
-    scan = windll.user32.MapVirtualKeyA( vk, 0 )
-    windll.user32.keybd_event( vk, scan, 0, 0 )
+    scan = windll.user32.MapVirtualKeyA( vk, 0 )
+    windll.user32.keybd_event( vk, scan, 0, 0 )
 
 
 
 def _key_up( vk ) :
-    
-    scan = windll.user32.MapVirtualKeyA( vk, 0 )
-    windll.user32.keybd_event( vk, scan, KEYEVENTF_KEYUP, 0 )
+    
+    scan = windll.user32.MapVirtualKeyA( vk, 0 )
+    windll.user32.keybd_event( vk, scan, KEYEVENTF_KEYUP, 0 )
 
 
 
 
 def toggle_numlock( turn_on ) :
-    '''
-    toggle_numlock(int) ->  int
+    '''
+    toggle_numlock(int) ->  int
 
-    Turns NUMLOCK on or off and returns whether
-    it was originally on or off. 
-    '''
+    Turns NUMLOCK on or off and returns whether
+    it was originally on or off. 
+    '''
 
-    is_on = 0
-    keys = [];
+    is_on = 0
+    keys = [];
 
-    is_on = windll.user32.GetKeyState( VK_NUMLOCK ) & 1
+    is_on = windll.user32.GetKeyState( VK_NUMLOCK ) & 1
 
-    if is_on != turn_on :   
-        windll.user32.keybd_event(VK_NUMLOCK, 
-                    69, 
-                    KEYEVENTF_EXTENDEDKEY | 0, 
-                    0);
-        windll.user32.keybd_event(VK_NUMLOCK, 
-                    69, 
-                    KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 
-                    0);
+    if is_on != turn_on :   
+        windll.user32.keybd_event(VK_NUMLOCK, 
+                    69, 
+                    KEYEVENTF_EXTENDEDKEY | 0, 
+                    0);
+        windll.user32.keybd_event(VK_NUMLOCK, 
+                    69, 
+                    KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 
+                    0);
 
-    
+    
 
-    return is_on
+    return is_on
 
 
 def char2keycode( char ) :
-    '''
-    char2keycode(char) -> int
+    '''
+    char2keycode(char) -> int
 
-    Converts character to virtual key code
-    '''
-    vk = windll.user32.VkKeyScanA( ord( char ) )
-    return  vk
+    Converts character to virtual key code
+    '''
+    vk = windll.user32.VkKeyScanA( ord( char ) )
+    return  vk
 
 
 
 def key_down( key ) :
-    '''
-    key_down(int) -> None
+    '''
+    key_down(int) -> None
 
-    Generates a key pressed event.  Takes a
-    virtual key code.
-    '''
-    vk = key
-    # XXX exception if >= 256
-    _key_down(  vk )
+    Generates a key pressed event.  Takes a
+    virtual key code.
+    '''
+    vk = key
+    # XXX exception if >= 256
+    _key_down(  vk )
 
 
 
 def key_up( key ) :
-    '''
-    key_up(int) -> None
+    '''
+    key_up(int) -> None
 
-    Generates a key released event.  Takes a
-    virtual key code.
-    '''
+    Generates a key released event.  Takes a
+    virtual key code.
+    '''
 
-    vk = key
-    # XXX exception if >= 256
-    _key_up( vk )
+    vk = key
+    # XXX exception if >= 256
+    _key_up( vk )
 
