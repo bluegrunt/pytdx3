@@ -95,6 +95,7 @@ def stream2struct(string, stype):
 ## gen
 def gen_tdx1min_aday():
     tdx1min_aday = []
+    tdx1min_aday.append(datetime.datetime(2014,1,1,9,25).time())
     t0 = datetime.datetime(2014,1,1,9,30)
     i = 1
     while True:
@@ -120,7 +121,6 @@ tdx1min_aday = gen_tdx1min_aday()
 tdx1min_index  = {}
 for n,item in enumerate(tdx1min_aday):
     tdx1min_index[item] = n
-    
 def gen_tdx1min_struct(p_id,p_dt):
     sample = []
     for i in tdx1min_aday:
@@ -156,15 +156,28 @@ def readfbtxt(p_lines,p_name):
         stkd = int(sDay[6:8])    
         line_no = 0
         data = []
+        re_hour_minute = re.compile(r'(\d\d):(\d\d)')
+        b_first = True
         for l in p_lines:
             line_no += 1
-            if line_no <=3: continue 
+            # if line_no <=3: continue 
             l = l.strip()
             t = re.split('\s+',l)
             if len(t) < 4 : continue
             k = None
+            hm = re_hour_minute.search(t[0])
+            if hm == None: 
+                continue
+            hour,minute = hm.groups() 
             try:
-                k =  datetime.datetime(stky,stkm,stkd,int(t[0][0:2]),int(t[0][3:5]))
+                # k =  datetime.datetime(stky,stkm,stkd,int(t[0][0:2]),int(t[0][3:5]))
+                hour = int(hour)
+                minute = int(minute)
+                if b_first :
+                    b_first = False
+                    if hour == 9 and minute == 30:
+                        minute = 25
+                k =  datetime.datetime(stky,stkm,stkd,hour,minute)
             except ValueError as e :
                 if DEBUG :
                     print(e)
@@ -278,6 +291,8 @@ def txtTime2KTime(dt):
         return dt
     elif dt.hour == 11 and dt.minute >= 29:
         return datetime.datetime(dt.year,dt.month,dt.day,13,0) 
+    elif dt.hour == 9 and dt.minute == 25 :
+        return dt
     else :
         return dt + datetime.timedelta(minutes =1)
         
@@ -412,7 +427,7 @@ def which5min(dt):
     if type(dt) == datetime.datetime:
         t = datetime.time(dt.hour,dt.minute,dt.second)
 
-    if t < datetime.time(9,30) : return None 
+    if t < datetime.time(9,25) : return None 
     if   t < datetime.time(9,35): ret = datetime.time(9,35)
     elif t < datetime.time(9,40): ret = datetime.time(9,40)
     elif t < datetime.time(9,45): ret = datetime.time(9,45)

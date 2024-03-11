@@ -28,11 +28,12 @@ layout1 = [
         sg.Push(),sg.Checkbox("1分钟",key='-MIN1-', default=True),
         sg.Checkbox("5分钟",key='-MIN5-',default=True),
         sg.Push(),
-        sg.Checkbox("tdx240",key='-TDX240-',default=True),
+        sg.Checkbox("tdx240",key='-TDX240-',default=False),
         sg.Push()
     ],
     [sg.Push(),sg.Button("处理",key='-CONVERT-'),sg.Push()],
-    [sg.ProgressBar(100,key='-PROCESSBAR-',expand_x=True)],
+    [sg.ProgressBar(100,key='-PROCESSBAR-',expand_x=True,size=(16,3),bar_color='blue')],
+    [sg.VPush()],
     [sg.Multiline(key='-OUTPUT-',expand_x=True,expand_y=True,size=(20,2))],
     [sg.VPush()]
 ]
@@ -44,7 +45,7 @@ layout1 = [
 layout2 = [
     [sg.VPush()],
     [sg.Text('Offline Path:'),sg.Input(expand_x=True,key='-INPUT_OFFLINE-'),sg.Button("@",size=(2,1),key="-BUTTON_OFFLINE-")],
-    [sg.Text('Online Path:'),sg.Input(expand_x=True,key='-INPUT_ONLINE-') ,sg.Button("@",size=(2,1),key="-BUTTON_ONLINE-") ],
+    [sg.Text('Online Path:') ,sg.Input(expand_x=True,key='-INPUT_ONLINE-') ,sg.Button("@",size=(2,1),key="-BUTTON_ONLINE-") ],
     [sg.VPush()],
     [sg.Push(),sg.Button("保存配置",key='-SAVE-'),sg.Push()],
     [sg.VPush()],
