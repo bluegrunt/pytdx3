@@ -868,6 +868,15 @@ def get_tdxNames_return_dict(root,filt = True):
         res[item[0]] = item[1]
     return res 
 
+def bin2gbk(bin:bytes):
+    ss = ""
+    try:
+        ss = bin.decode('gbk')
+    except UnicodeDecodeError:
+        if len(bin) > 2:
+            ss = bin[0:-1].decode('gbk')
+    return ss
+
 def get_tdxNames_m(fname,Bsimple = True):
     data = []
     try:
@@ -881,12 +890,15 @@ def get_tdxNames_m(fname,Bsimple = True):
             raw = f.read(itemlen)
             if len(raw) <= 0 : break
             nn = stream2struct(raw,T_TdxNames_m)
-            try:
-                data.append((nn.stkid.decode('gbk'),nn.stkname.decode('gbk'),nn.shortname.decode('gbk')))
-            except UnicodeDecodeError as e:
-                print(nn.stkid,nn.stkname,nn.shortname)
-                print(e)
-                continue
+            stkid     = bin2gbk(nn.stkid)
+            stkname   = bin2gbk(nn.stkname)
+            shortname = bin2gbk(nn.shortname)
+            data.append((stkid,stkname,shortname))
+            # try:
+            #     data.append((nn.stkid.decode('gbk'),nn.stkname.decode('gbk'),nn.shortname.decode('gbk')))
+            # except UnicodeDecodeError as e:
+            #     print(f"ID:{nn.stkid} name:{nn.stkname} shortname:{nn.shortname}  with error:{e}" )
+            #     continue
             #data.append((nn.stkid,nn.stkname,nn.shortname))
 
         f.close()
